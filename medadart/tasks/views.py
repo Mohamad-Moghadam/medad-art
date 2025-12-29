@@ -9,6 +9,9 @@ class NewTask(CreateAPIView):
     serializer_class = TaskSerializer
     queryset = Task.objects.all()
 
+    def perform_create(self, serializer):
+        serializer.save(creator=self.request.user)
+
 class ChangeProgression(UpdateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = TaskSerializer
