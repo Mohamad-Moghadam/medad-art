@@ -21,6 +21,34 @@ class ChangeProgression(UpdateAPIView):
     def get_queryset(self):
         return Task.objects.filter(models.Q(creator=self.request.user) | models.Q(assigned=self.request.user))
 
+    def perform_update(self, serializer):
+        task = serializer.instance
+        data = serializer.validated_data
+
+        status_sent = "status" in data
+        progress_sent = "progress" in data
+
+        task = serializer.save()
+
+        if status_sent:
+            if task.status == Task.TODO:
+                task.progress = 0
+            elif task.status == Task.IN_PROGRESS:
+                if task.progress == 0:
+                    task.progress = 1
+            elif task.status == Task.COMPLETED:
+                task.progress = 100
+
+        elif progress_sent:
+            if task.progress == 0:
+                task.status = Task.TODO
+            elif 0 < task.progress < 100:
+                task.status = Task.IN_PROGRESS
+            elif task.progress == 100:
+                task.status = Task.COMPLETED
+
+        task.save()
+
 class DeleteTask(DestroyAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = TaskSerializer
