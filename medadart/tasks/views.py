@@ -1,5 +1,5 @@
-from rest_framework.generics import CreateAPIView, UpdateAPIView, DestroyAPIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.generics import CreateAPIView, UpdateAPIView, DestroyAPIView, ListAPIView
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from .serializers import TaskSerializer
 from .models import Task
 from django.db import models
@@ -55,3 +55,8 @@ class DeleteTask(DestroyAPIView):
 
     def get_queryset(self):
         return Task.objects.filter(creator=self.request.user)
+    
+class ListTasks(ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = TaskSerializer
+    queryset = Task.objects.all()
