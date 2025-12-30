@@ -5,4 +5,4 @@ class TaskSerializer(ModelSerializer):
     class Meta:
         model = Task
         fields = ['id', 'title', 'description', 'progress', 'status', 'creator', 'assigned']
-        extra_kwargs = {"progress" : {"read_only" : True}, "creator": {"read_only" : True}}
+        extra_kwargs = {"creator": {"read_only" : True}}
