@@ -20,24 +20,23 @@ class Task(models.Model):
 
     assigned = models.ForeignKey(User, on_delete=models.CASCADE, related_name="assigned_tasks")
 
-def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs):
+        if self.status == self.COMPLETED:
+            self.progress = 100
 
-    if self.progress == 100:
-        self.status = self.COMPLETED
+        elif self.progress == 100:
+            self.status = self.COMPLETED
 
-    elif self.status == self.COMPLETED:
-        self.progress = 100
+        elif self.status == self.TODO:
+            self.progress = 0
 
-    elif self.status == self.TODO:
-        self.progress = 0
+        elif 0 < self.progress < 100:
+            self.status = self.IN_PROGRESS
 
-    elif 0 < self.progress < 100:
-        self.status = self.IN_PROGRESS
+        elif self.status == self.IN_PROGRESS and self.progress == 0:
+            self.progress = 1
 
-    elif self.status == self.IN_PROGRESS and self.progress == 0:
-        self.progress = 1
-
-    super().save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
     def __str__(self):
